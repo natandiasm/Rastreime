@@ -14,6 +14,10 @@ class HomeScreen extends StatelessWidget {
         Scaffold(
           body: HomeTab(),
           drawer: CustomDrawer(_pageController),
+          floatingActionButton: FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: (){},
+          ),
         ),
         Container(color: Colors.amber),
         Container(color: Colors.grey),
