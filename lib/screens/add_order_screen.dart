@@ -1,3 +1,4 @@
+import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
@@ -11,6 +12,7 @@ class AddOrderScreen extends StatefulWidget {
 class _AddOrderScreenState extends State<AddOrderScreen> {
   final _nameController = TextEditingController();
   final _shippingcodeController = TextEditingController();
+  String _categoriaEncomenda;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -64,6 +66,73 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                   SizedBox(
                     height: 16.0,
                   ),
+                  DropDownFormField(
+                    titleText: 'Categoria',
+                    hintText: 'Escolha uma categoria',
+                    value: _categoriaEncomenda,
+                    onSaved: (value) {
+                      setState(() {
+                        _categoriaEncomenda = value;
+                      });
+                    },
+                    onChanged: (value) {
+                      setState(() {
+                        _categoriaEncomenda = value;
+                      });
+                    },
+                    dataSource: [
+                      {
+                        "display": "Eletronico",
+                        "value": "eletronico",
+                      },
+                      {
+                        "display": "Smartphone",
+                        "value": "smartphone",
+                      },
+                      {
+                        "display": "Computador",
+                        "value": "computador",
+                      },
+                      {
+                        "display": "Jogo",
+                        "value": "jogo",
+                      },
+                      {
+                        "display": "Livro",
+                        "value": "livro",
+                      },
+                      {
+                        "display": "Ferramenta",
+                        "value": "ferramenta",
+                      },
+                      {
+                        "display": "Esporte",
+                        "value": "esporte",
+                      },
+                      {
+                        "display": "Roupa",
+                        "value": "roupe",
+                      },
+                      {
+                        "display": "Calçado",
+                        "value": "calcado",
+                      },
+                      {
+                        "display": "Bolsa",
+                        "value": "bolsa",
+                      },
+                      {
+                        "display": "Comida",
+                        "value": "comida",
+                      },
+                      {
+                        "display": "Outro",
+                        "value": "outro",
+                      },
+                    ],
+                    textField: 'display',
+                    valueField: 'value',
+                  ),
                   SizedBox(
                     height: 44.0,
                     child: RaisedButton(
@@ -77,27 +146,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                       textColor: Colors.white,
                       color: Theme.of(context).primaryColor,
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          Map<String, dynamic> orderData = {
-                            "name": _nameController.text,
-                            "shippingcode": _shippingcodeController.text,
-                            "user": model.firebaseUser.uid
-                          };
-                          OrderModel.addOrder(
-                              orderData: orderData,
-                              onFail: () {
-                                _scaffoldKey.currentState.showSnackBar(
-                                  SnackBar(
-                                    content: Text("Não foi possivel adicionar a encomenda"),
-                                    backgroundColor: Colors.redAccent,
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              },
-                              onSucess: () {
-                                Navigator.of(context).pop();
-                              });
-                        }
+                        _onPressAddOrderButton(model);
                       },
                     ),
                   ),
@@ -108,26 +157,28 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
         ));
   }
 
-  void _onSucess() {
-    _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text("Usuário criado com sucesso!"),
-        backgroundColor: Theme.of(context).primaryColor,
-        duration: Duration(seconds: 2),
-      ),
-    );
-    Future.delayed(Duration(seconds: 2)).then((_) {
-      Navigator.of(context).pop();
-    });
-  }
-
-  void _onFail() {
-    _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text("Falha ao criar usuário!"),
-        backgroundColor: Colors.redAccent,
-        duration: Duration(seconds: 2),
-      ),
-    );
+  void _onPressAddOrderButton(model) {
+    if (_formKey.currentState.validate()) {
+      Map<String, dynamic> orderData = {
+        "name": _nameController.text,
+        "shippingcode": _shippingcodeController.text,
+        "category": _categoriaEncomenda,
+        "user": model.firebaseUser.uid
+      };
+      OrderModel.addOrder(
+          orderData: orderData,
+          onFail: () {
+            _scaffoldKey.currentState.showSnackBar(
+              SnackBar(
+                content: Text("Não foi possivel adicionar a encomenda"),
+                backgroundColor: Colors.redAccent,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          },
+          onSucess: () {
+            Navigator.of(context).pop();
+          });
+    }
   }
 }
