@@ -1,10 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class orderModel {
-  static addOrder({@required idUser, @required Map<String, dynamic> orderData}) {
+class OrderModel {
+  static addOrder(
+      {@required Map<String, dynamic> orderData,
+      @required VoidCallback onSucess,
+      @required VoidCallback onFail}) {
     Firestore database = Firestore.instance;
-
-    database.collection('orders').document(idUser).setData(orderData);
+    database.collection('orders').document()
+    .setData(orderData)
+    .catchError((e) {
+      onFail();
+    });
+    onSucess();
   }
 }

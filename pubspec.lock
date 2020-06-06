@@ -132,6 +132,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_correios:
+    dependency: "direct main"
+    description:
+      name: flutter_correios
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   flutter_staggered_grid_view:
     dependency: "direct main"
     description:
@@ -177,6 +184,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.1+1"
+  line_awesome_icons:
+    dependency: "direct main"
+    description:
+      name: line_awesome_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4+2"
   matcher:
     dependency: transitive
     description:
@@ -252,6 +266,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.3"
+  statusbar:
+    dependency: "direct main"
+    description:
+      name: statusbar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   stream_channel:
     dependency: transitive
     description:
