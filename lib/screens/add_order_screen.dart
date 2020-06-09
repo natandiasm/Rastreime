@@ -2,6 +2,7 @@ import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
+import 'package:rastreimy/util/correios.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class AddOrderScreen extends StatefulWidget {
@@ -82,7 +83,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                     },
                     dataSource: [
                       {
-                        "display": "Eletronico",
+                        "display": "Eletrônico",
                         "value": "eletronico",
                       },
                       {
@@ -92,6 +93,10 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                       {
                         "display": "Computador",
                         "value": "computador",
+                      },
+                      {
+                        "display": "Eletrodoméstico",
+                        "value": "eletrodomestico",
                       },
                       {
                         "display": "Jogo",
@@ -111,11 +116,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                       },
                       {
                         "display": "Roupa",
-                        "value": "roupe",
-                      },
-                      {
-                        "display": "Calçado",
-                        "value": "calcado",
+                        "value": "roupa",
                       },
                       {
                         "display": "Bolsa",
