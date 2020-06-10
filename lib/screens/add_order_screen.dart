@@ -2,7 +2,6 @@ import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
-import 'package:rastreimy/util/correios.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class AddOrderScreen extends StatefulWidget {

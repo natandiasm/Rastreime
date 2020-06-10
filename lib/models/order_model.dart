@@ -65,4 +65,33 @@ class OrderModel {
         break;
     }
   }
+
+  static iconTrackingOrder({@required String status}) {
+    switch (status) {
+      case "Objeto postado":
+        return [LineAwesomeIcons.cube, Colors.grey];
+        break;
+      case "Objeto encaminhado":
+        return [LineAwesomeIcons.truck, Color.fromARGB(255, 22, 98, 187)];
+        break;
+      case "Objeto recebido na unidade de exportação no país de origem":
+        return [LineAwesomeIcons.plane, Colors.green];
+        break;
+      case "Objeto recebido pelos Correios do Brasil":
+        return [LineAwesomeIcons.globe, Colors.green];
+        break;
+      case "Fiscalização aduaneira finalizada":
+        return [LineAwesomeIcons.frown_o, Colors.orange];
+        break;
+      case "Objeto aguardando retirada no endereço indicado":
+        return [LineAwesomeIcons.street_view, Colors.lightGreenAccent];
+        break;
+      case "Objeto entregue ao destinatário":
+        return [LineAwesomeIcons.smile_o, Colors.lightGreen];
+        break;
+      default:
+        return [LineAwesomeIcons.truck, Color.fromARGB(255, 22, 98, 187)];
+        break;
+    }
+  }
 }

@@ -1,15 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:line_awesome_icons/line_awesome_icons.dart';
+import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/util/correios.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:timeline_list/timeline.dart';
 import 'package:timeline_list/timeline_model.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final DocumentSnapshot orderData;
+
   @override
   _OrderDetailScreen createState() => _OrderDetailScreen();
+
   OrderDetailScreen({Key key, this.orderData}) : super(key: key);
 }
 
@@ -18,23 +23,8 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<TimelineModel> items = [
-      TimelineModel(
-          Container(
-            color: Colors.white,
-            child: ListTile(
-              title: Text("Text"),
-              
-            ),
-          ),
-          position: TimelineItemPosition.random,
-          iconBackground: Colors.blue,
-          icon: Icon(Icons.blur_circular)),
-      TimelineModel(Placeholder(),
-          position: TimelineItemPosition.random,
-          iconBackground: Colors.blue,
-          icon: Icon(Icons.blur_circular)),
-    ];
+    Correios correio = Correios();
+    List<TimelineModel> items = [];
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -54,13 +44,110 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
           ),
           centerTitle: true,
         ),
-        body:
-            ScopedModelDescendant<UserModel>(builder: (context, child, model) {
-          if (model.isLoading)
-            return Center(
-              child: CircularProgressIndicator(),
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: ScopedModelDescendant<UserModel>(
+              builder: (context, child, model) {
+            if (model.isLoading) return CircularProgressIndicator();
+
+            return Column(
+              children: <Widget>[
+                Padding(
+                  padding:
+                      const EdgeInsets.only(bottom: 20, left: 10, right: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 1,
+                            color: Colors.black12,
+                            offset: Offset(0, 2))
+                      ],
+                      color: Colors.white,
+                    ),
+                    child: ListTile(
+                      title: Text(widget.orderData['name']),
+                      subtitle: Text(widget.orderData['shippingcode']),
+                      leading: Icon(
+                        OrderModel.iconOrder(
+                            category: widget.orderData['category']),
+                        size: 35,
+                      ),
+                    ),
+                  ),
+                ),
+                FutureBuilder(
+                    future: correio.rastrear(
+                        codigo: widget.orderData['shippingcode']),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        for (dynamic evento in snapshot.data["eventos"]) {
+                          List<dynamic> iconAndColor;
+                          print(OrderModel.iconTrackingOrder(
+                              status: evento["status"])[0]);
+                          items.add(TimelineModel(
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          blurRadius: 1,
+                                          color: Colors.black12,
+                                          offset: Offset(0, 2))
+                                    ],
+                                    color: Colors.white,
+                                  ),
+                                  child: ListTile(
+                                    title: Text(evento["local"]),
+                                    subtitle: Text(evento["status"]),
+                                    trailing: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text(evento["data"]),
+                                        Text(evento["hora"])
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              position: TimelineItemPosition.random,
+                              iconBackground: OrderModel.iconTrackingOrder(
+                                  status: evento["status"])[1],
+                              icon: Icon(
+                                OrderModel.iconTrackingOrder(
+                                    status: evento["status"])[0],
+                                color: Colors.white,
+                              )));
+                          print(evento);
+                        }
+                        return Timeline(
+                            children: items,
+                            shrinkWrap: true,
+                            position: TimelinePosition.Left);
+                      } else {
+                        return Center(
+                          child: Shimmer.fromColors(
+                              baseColor: Colors.black12,
+                              highlightColor: Colors.black26,
+                              child: Container(
+                                width: 150,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(5)),
+                              )),
+                        );
+                      }
+                    }),
+              ],
             );
-          return Timeline(children: items, position: TimelinePosition.Center);
-        }));
+          }),
+        ));
   }
 }
