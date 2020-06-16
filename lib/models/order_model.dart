@@ -84,7 +84,7 @@ class OrderModel {
         return [LineAwesomeIcons.frown_o, Colors.orange];
         break;
       case "Objeto aguardando retirada no endereço indicado":
-        return [LineAwesomeIcons.street_view, Colors.lightGreenAccent];
+        return [LineAwesomeIcons.street_view, Colors.amber];
         break;
       case "Objeto entregue ao destinatário":
         return [LineAwesomeIcons.smile_o, Colors.lightGreen];

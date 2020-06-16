@@ -83,9 +83,8 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         for (dynamic evento in snapshot.data["eventos"]) {
-                          List<dynamic> iconAndColor;
-                          print(OrderModel.iconTrackingOrder(
-                              status: evento["status"])[0]);
+                          dynamic iconAndColor = OrderModel.iconTrackingOrder(
+                              status: evento["status"]);
                           items.add(TimelineModel(
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10),
@@ -100,31 +99,30 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                                     ],
                                     color: Colors.white,
                                   ),
-                                  child: ListTile(
-                                    title: Text(evento["local"]),
-                                    subtitle: Text(evento["status"]),
-                                    trailing: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(evento["data"]),
-                                        Text(evento["hora"])
-                                      ],
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 10, bottom: 10),
+                                    child: ListTile(
+                                      title: Text(evento["local"]),
+                                      subtitle: Text(evento["status"]),
+                                      trailing: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text(evento["data"]),
+                                          Text(evento["hora"])
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                               position: TimelineItemPosition.random,
-                              iconBackground: OrderModel.iconTrackingOrder(
-                                  status: evento["status"])[1],
-                              icon: Icon(
-                                OrderModel.iconTrackingOrder(
-                                    status: evento["status"])[0],
+                              iconBackground: iconAndColor[1],
+                              icon: Icon(iconAndColor[0],
                                 color: Colors.white,
                               )));
-                          print(evento);
                         }
                         return Timeline(
                             children: items,

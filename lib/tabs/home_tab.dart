@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/screens/order_detail.dart';
@@ -24,42 +26,62 @@ class HomeTab extends StatelessWidget {
             ],
             color: Colors.white,
           ),
-          child: ListTile(
-            title: Text(document['name']),
-            subtitle: FutureBuilder(
-                future: correio.rastrear(codigo: document['shippingcode']),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return 
-                        Container(
-                          child: Text(
-                            snapshot.data["eventos"][0]["local"],
-                            style: TextStyle(fontSize: 13.0),
+          child: Slidable(
+            actionPane: SlidableDrawerActionPane(),
+            actionExtentRatio: 0.25,
+            actions: <Widget>[
+              IconSlideAction(
+                caption: 'Editar',
+                color: Colors.transparent,
+                foregroundColor: Color.fromARGB(255, 22, 98, 187),
+                icon: LineAwesomeIcons.pencil,
+                onTap: () => {},
+              ),
+              IconSlideAction(
+                caption: 'Excluir',
+                color: Colors.transparent,
+                foregroundColor: Colors.deepOrange,
+                icon: LineAwesomeIcons.trash,
+                onTap: () => {},
+              ),
+            ],
+            child: ListTile(
+              title: Text(document['name']),
+              subtitle: FutureBuilder(
+                  future: correio.rastrear(codigo: document['shippingcode']),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return 
+                          Container(
+                            child: Text(
+                              snapshot.data["eventos"][0]["local"],
+                              style: TextStyle(fontSize: 13.0),
+                            ));
+                  
+                    } else {
+                      return Shimmer.fromColors(
+                          baseColor: Colors.black12,
+                          highlightColor: Colors.black26,
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(5)
+                            ),
                           ));
-                
-                  } else {
-                    return Shimmer.fromColors(
-                        baseColor: Colors.black12,
-                        highlightColor: Colors.black26,
-                        child: Container(
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(5)
-                          ),
-                        ));
-                  }
-                }),
-            leading: Icon(
-              OrderModel.iconOrder(category: document['category']),
-              size: 35,
+                    }
+                  }),
+              leading: Icon(
+                OrderModel.iconOrder(category: document['category']),
+                size: 35,
+              ),
+              onTap: () {
+                Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => OrderDetailScreen(orderData: document,)),
+                    );
+              },
             ),
-            onTap: () {
-              Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => OrderDetailScreen(orderData: document,)),
-                  );
-            },
           ),
         ),
       );
