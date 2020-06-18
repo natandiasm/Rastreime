@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
+import 'package:rastreimy/screens/add_order_screen.dart';
 import 'package:rastreimy/screens/order_detail.dart';
 import 'package:rastreimy/util/correios.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -35,15 +36,21 @@ class HomeTab extends StatelessWidget {
                 color: Colors.transparent,
                 foregroundColor: Color.fromARGB(255, 22, 98, 187),
                 icon: LineAwesomeIcons.pencil,
-                onTap: () => {},
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => AddOrderScreen(order: document)),
+                  );
+                },
               ),
               IconSlideAction(
-                caption: 'Excluir',
-                color: Colors.transparent,
-                foregroundColor: Colors.deepOrange,
-                icon: LineAwesomeIcons.trash,
-                onTap: () => {},
-              ),
+                  caption: 'Excluir',
+                  color: Colors.transparent,
+                  foregroundColor: Colors.deepOrange,
+                  icon: LineAwesomeIcons.trash,
+                  onTap: () {
+                    buttonExcluirTouch(context: context, order: document);
+                  }),
             ],
             child: ListTile(
               title: Text(document['name']),
@@ -51,13 +58,11 @@ class HomeTab extends StatelessWidget {
                   future: correio.rastrear(codigo: document['shippingcode']),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return 
-                          Container(
-                            child: Text(
-                              snapshot.data["eventos"][0]["local"],
-                              style: TextStyle(fontSize: 13.0),
-                            ));
-                  
+                      return Container(
+                          child: Text(
+                        snapshot.data["eventos"][0]["local"],
+                        style: TextStyle(fontSize: 13.0),
+                      ));
                     } else {
                       return Shimmer.fromColors(
                           baseColor: Colors.black12,
@@ -66,9 +71,8 @@ class HomeTab extends StatelessWidget {
                             width: 20,
                             height: 20,
                             decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(5)
-                            ),
+                                color: Colors.black,
+                                borderRadius: BorderRadius.circular(5)),
                           ));
                     }
                   }),
@@ -78,8 +82,11 @@ class HomeTab extends StatelessWidget {
               ),
               onTap: () {
                 Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => OrderDetailScreen(orderData: document,)),
-                    );
+                  MaterialPageRoute(
+                      builder: (context) => OrderDetailScreen(
+                            orderData: document,
+                          )),
+                );
               },
             ),
           ),
@@ -98,7 +105,9 @@ class HomeTab extends StatelessWidget {
                   height: 550,
                   child: Column(
                     children: <Widget>[
-                      Image.asset('assets/images/login.png'),
+                      Container(
+                          height: 200,
+                          child: Image.asset('assets/images/login.png')),
                       Text(
                         "Faça login ou crie uma conta \npara salvar suas encomendas",
                         textAlign: TextAlign.center,
@@ -167,6 +176,49 @@ class HomeTab extends StatelessWidget {
           _buildBodyBack(),
         ],
       ),
+    );
+  }
+
+  VoidCallback buttonExcluirTouch(
+      {@required BuildContext context, @required DocumentSnapshot order}) {
+    Widget cancelaButton = FlatButton(
+      child: Text("Cancelar"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continuaButton = FlatButton(
+      child: Text(
+        "Continuar",
+        style: TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.bold),
+      ),
+      onPressed: () {
+        OrderModel.removeOrder(
+            order: order,
+            onSucess: () {
+              Navigator.of(context).pop();
+            },
+            onFail: () {});
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        "Exclusão da encomenda",
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      content:
+          Text("A sua encomenda será excluida da sua conta, deseja continuar?"),
+      actions: [
+        cancelaButton,
+        continuaButton,
+      ],
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

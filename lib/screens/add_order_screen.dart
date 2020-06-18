@@ -1,10 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
+import 'package:rastreimy/widgets/custom_input.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class AddOrderScreen extends StatefulWidget {
+  final DocumentSnapshot order;
+
+  AddOrderScreen({this.order});
+
   @override
   _AddOrderScreenState createState() => _AddOrderScreenState();
 }
@@ -18,6 +24,13 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.order != null) {
+      setState(() {
+        _nameController.text = widget.order["name"];
+        _shippingcodeController.text = widget.order["shippingcode"];
+        _categoriaEncomenda = widget.order["category"];
+      });
+    }
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -48,20 +61,30 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
               child: ListView(
                 padding: EdgeInsets.all(16.0),
                 children: <Widget>[
-                  TextFormField(
+                  Container(
+                    height: 200,
+                      child: Image.asset('assets/images/order.png')),
+                  CustomInput(
                     controller: _shippingcodeController,
-                    decoration: InputDecoration(hintText: "Código"),
-                    keyboardType: TextInputType.emailAddress,
+                    hintText: "Código",
+                    keyboardType: TextInputType.text,
+                    enabled: widget.order == null ? true : false,
+                    maxLength: 13,
                     validator: (text) {
-                      if (text.isEmpty) return "Digite um codigo!";
+                      if (text.length < 13)
+                        return "Codigo de rastreio invalido.";
+                      if (text.isEmpty) return "Digite um codigo.";
                     },
                   ),
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(hintText: "Nome"),
-                    validator: (text) {
-                      if (text.isEmpty) return "Digite o nome do produto";
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: CustomInput(
+                      controller: _nameController,
+                      hintText: "Nome",
+                      validator: (text) {
+                        if (text.isEmpty) return "Digite o nome da encomenda.";
+                      },
+                    ),
                   ),
                   SizedBox(
                     height: 16.0,
@@ -79,6 +102,9 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                       setState(() {
                         _categoriaEncomenda = value;
                       });
+                    },
+                    validator: (text) {
+                      if (text.isEmpty) return "Digite o nome da encomenda.";
                     },
                     dataSource: [
                       {
@@ -133,21 +159,28 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                     textField: 'display',
                     valueField: 'value',
                   ),
-                  SizedBox(
-                    height: 44.0,
-                    child: RaisedButton(
-                      child: Text(
-                        "Adicionar encomenda",
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 50),
+                    child: SizedBox(
+                      height: 60.0,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        elevation: 0,
+                        child: Text(
+                          widget.order == null
+                              ? "Adicionar encomenda"
+                              : "Salvar alteração",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                          ),
                         ),
+                        textColor: Colors.white,
+                        color: Theme.of(context).primaryColor,
+                        onPressed: () {
+                          _onPressAddOrderButton(model);
+                        },
                       ),
-                      textColor: Colors.white,
-                      color: Theme.of(context).primaryColor,
-                      onPressed: () {
-                        _onPressAddOrderButton(model);
-                      },
                     ),
                   ),
                 ],
@@ -163,22 +196,42 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
         "name": _nameController.text,
         "shippingcode": _shippingcodeController.text,
         "category": _categoriaEncomenda,
-        "user": model.firebaseUser.uid
+        "user": model.firebaseUser.uid,
+        "delivered": false,
+        "events": 0,
       };
-      OrderModel.addOrder(
-          orderData: orderData,
-          onFail: () {
-            _scaffoldKey.currentState.showSnackBar(
-              SnackBar(
-                content: Text("Não foi possivel adicionar a encomenda"),
-                backgroundColor: Colors.redAccent,
-                duration: Duration(seconds: 2),
-              ),
-            );
-          },
-          onSucess: () {
-            Navigator.of(context).pop();
-          });
+      if (widget.order != null) {
+        OrderModel.updateOrder(
+            order: widget.order,
+            orderData: orderData,
+            onFail: () {
+              _scaffoldKey.currentState.showSnackBar(
+                SnackBar(
+                  content: Text("Não foi possivel atualizar sua encomenda."),
+                  backgroundColor: Colors.redAccent,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            onSucess: () {
+              Navigator.of(context).pop();
+            });
+      } else {
+        OrderModel.addOrder(
+            orderData: orderData,
+            onFail: () {
+              _scaffoldKey.currentState.showSnackBar(
+                SnackBar(
+                  content: Text("Não foi possivel adicionar a encomenda"),
+                  backgroundColor: Colors.redAccent,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            onSucess: () {
+              Navigator.of(context).pop();
+            });
+      }
     }
   }
 }
