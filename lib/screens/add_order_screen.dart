@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:rastreimy/models/category_model.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
+import 'package:rastreimy/widgets/custom_button.dart';
 import 'package:rastreimy/widgets/custom_input.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -62,7 +64,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                 padding: EdgeInsets.all(16.0),
                 children: <Widget>[
                   Container(
-                    height: 200,
+                      height: 200,
                       child: Image.asset('assets/images/order.png')),
                   CustomInput(
                     controller: _shippingcodeController,
@@ -106,82 +108,23 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                     validator: (text) {
                       if (text.isEmpty) return "Digite o nome da encomenda.";
                     },
-                    dataSource: [
-                      {
-                        "display": "Eletrônico",
-                        "value": "eletronico",
-                      },
-                      {
-                        "display": "Smartphone",
-                        "value": "smartphone",
-                      },
-                      {
-                        "display": "Computador",
-                        "value": "computador",
-                      },
-                      {
-                        "display": "Eletrodoméstico",
-                        "value": "eletrodomestico",
-                      },
-                      {
-                        "display": "Jogo",
-                        "value": "jogo",
-                      },
-                      {
-                        "display": "Livro",
-                        "value": "livro",
-                      },
-                      {
-                        "display": "Ferramenta",
-                        "value": "ferramenta",
-                      },
-                      {
-                        "display": "Esporte",
-                        "value": "esporte",
-                      },
-                      {
-                        "display": "Roupa",
-                        "value": "roupa",
-                      },
-                      {
-                        "display": "Bolsa",
-                        "value": "bolsa",
-                      },
-                      {
-                        "display": "Comida",
-                        "value": "comida",
-                      },
-                      {
-                        "display": "Outro",
-                        "value": "outro",
-                      },
-                    ],
+                    dataSource: CategoryModel.getAllCategory(),
                     textField: 'display',
                     valueField: 'value',
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 50),
-                    child: SizedBox(
-                      height: 60.0,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        elevation: 0,
-                        child: Text(
-                          widget.order == null
-                              ? "Adicionar encomenda"
-                              : "Salvar alteração",
-                          style: TextStyle(
-                            fontSize: 18.0,
-                          ),
-                        ),
-                        textColor: Colors.white,
-                        color: Theme.of(context).primaryColor,
-                        onPressed: () {
-                          _onPressAddOrderButton(model);
-                        },
+                  CustomButton(
+                    child: Text(
+                      widget.order == null
+                          ? "Adicionar encomenda"
+                          : "Salvar alteração",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                    onPressed: () {
+                      _onPressAddOrderButton(model);
+                    },
                   ),
                 ],
               ),

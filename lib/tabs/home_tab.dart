@@ -5,6 +5,7 @@ import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/screens/add_order_screen.dart';
+import 'package:rastreimy/screens/login_screen.dart';
 import 'package:rastreimy/screens/order_detail.dart';
 import 'package:rastreimy/util/correios.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -23,7 +24,9 @@ class HomeTab extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                  blurRadius: 1, color: Colors.black12, offset: Offset(0, 2))
+                  blurRadius: 5,
+                  offset: Offset(0, 1),
+                  color: Color.fromARGB(255, 46, 46, 46).withOpacity(0.1))
             ],
             color: Colors.white,
           ),
@@ -53,7 +56,10 @@ class HomeTab extends StatelessWidget {
                   }),
             ],
             child: ListTile(
-              title: Text(document['name']),
+              title: Text(
+                document['name'],
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: FutureBuilder(
                   future: correio.rastrear(codigo: document['shippingcode']),
                   builder: (context, snapshot) {
@@ -77,9 +83,9 @@ class HomeTab extends StatelessWidget {
                     }
                   }),
               leading: Icon(
-                OrderModel.iconOrder(category: document['category']),
-                size: 35,
-              ),
+                  OrderModel.iconOrder(category: document['category']),
+                  size: 35,
+                  color: Theme.of(context).primaryColor),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -102,19 +108,46 @@ class HomeTab extends StatelessWidget {
                   BoxDecoration(color: Color.fromARGB(255, 252, 252, 252)),
               child: Center(
                 child: Container(
-                  height: 550,
+                  height: 365,
                   child: Column(
                     children: <Widget>[
                       Container(
                           height: 200,
-                          child: Image.asset('assets/images/login.png')),
+                          child: Hero(
+                              tag: "icon-login",
+                              child: Image.asset('assets/images/login.png'))),
                       Text(
                         "Faça login ou crie uma conta \npara salvar suas encomendas",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,
                         ),
-                      )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 50),
+                        child: SizedBox(
+                          height: 60.0,
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            elevation: 0,
+                            child: Text(
+                              "Entrar",
+                              style: TextStyle(
+                                fontSize: 18.0,
+                              ),
+                            ),
+                            textColor: Colors.white,
+                            color: Theme.of(context).primaryColor,
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) => LoginScreen()),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -133,15 +166,41 @@ class HomeTab extends StatelessWidget {
                         child: Text("Carregando..."),
                       );
                     }
-                    return ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: snapshot.data.documents.length,
-                        itemBuilder: (context, item) {
-                          return _buildListTile(
-                              context, snapshot.data.documents[item]);
-                        });
+                    return Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20, top: 20),
+                          child: Container(
+                            width: double.maxFinite,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Olá, ${model.userData["name"]}",
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                      "Vamos ver como estão suas encomendas hoje."),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: snapshot.data.documents.length,
+                            itemBuilder: (context, item) {
+                              return _buildListTile(
+                                  context, snapshot.data.documents[item]);
+                            }),
+                      ],
+                    );
                   }),
             ),
           );

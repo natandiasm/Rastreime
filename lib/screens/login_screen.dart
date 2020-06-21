@@ -1,6 +1,9 @@
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/screens/signup_screen.dart';
+import 'package:rastreimy/widgets/custom_button.dart';
+import 'package:rastreimy/widgets/custom_input.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text("Entrar"),
+        elevation: 0,
         centerTitle: true,
         actions: <Widget>[
           FlatButton(
@@ -46,105 +50,113 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           return SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            child: Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                      height: 200,
-                      child: Image.asset('assets/images/login.png')),
-                  Form(
-                    key: _formKey,
-                    child: ListView(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      padding: EdgeInsets.all(16.0),
-                      children: <Widget>[
-                        TextFormField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            hintText: "E-mail",
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  width: double.maxFinite,
+                  height: 400,
+                  child: FlareActor("assets/flare/bg-login.flr",
+                      alignment: Alignment.center,
+                      fit: BoxFit.cover,
+                      animation: "start"),
+                ),
+                Container(
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                          height: 200,
+                          child: Hero(
+                              tag: "icon-login",
+                              transitionOnUserGestures: true,
+                              child: Image.asset('assets/images/login.png'))),
+                      Form(
+                        key: _formKey,
+                        child: ListView(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          padding: EdgeInsets.all(16.0),
+                          children: <Widget>[
+                            CustomInput(
+                              controller: _emailController,
+                              hintText: "E-mail",
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (text) {
+                                if (text.isEmpty || !text.contains("@"))
+                                  return "E-mail inválido!";
+                              },
                             ),
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (text) {
-                            if (text.isEmpty || !text.contains("@"))
-                              return "E-mail inválido!";
-                          },
-                        ),
-                        SizedBox(
-                          height: 16.0,
-                        ),
-                        TextFormField(
-                          controller: _passController,
-                          decoration: InputDecoration(hintText: "Senha"),
-                          obscureText: true,
-                          validator: (text) {
-                            if (text.isEmpty || text.length < 6)
-                              return "Senha Inválida!";
-                          },
-                        ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: FlatButton(
-                            onPressed: () {
-                              if (_emailController.text.isEmpty) {
-                                _scaffoldKey.currentState.showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        "Insira seu e-mail para recupeção!"),
-                                    backgroundColor: Colors.redAccent,
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              } else {
-                                model.recoverPass(_emailController.text);
-                                _scaffoldKey.currentState.showSnackBar(
-                                  SnackBar(
-                                    content: Text("Confira seu e-mail"),
-                                    backgroundColor:
-                                        Theme.of(context).primaryColor,
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Text(
-                              "Esqueci minha senha",
-                              textAlign: TextAlign.right,
+                            SizedBox(
+                              height: 16.0,
                             ),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 16.0,
-                        ),
-                        SizedBox(
-                          height: 44.0,
-                          child: RaisedButton(
-                            child: Text(
-                              "Entrar",
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
+                            CustomInput(
+                              controller: _passController,
+                              hintText: "Senha",
+                              obscureText: true,
+                              validator: (text) {
+                                if (text.isEmpty || text.length < 6)
+                                  return "Senha Inválida!";
+                              },
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: FlatButton(
+                                onPressed: () {
+                                  if (_emailController.text.isEmpty) {
+                                    _scaffoldKey.currentState.showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            "Insira seu e-mail para recupeção!"),
+                                        backgroundColor: Colors.redAccent,
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  } else {
+                                    model.recoverPass(_emailController.text);
+                                    _scaffoldKey.currentState.showSnackBar(
+                                      SnackBar(
+                                        content: Text("Confira seu e-mail"),
+                                        backgroundColor:
+                                            Theme.of(context).primaryColor,
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  "Esqueci minha senha",
+                                  textAlign: TextAlign.right,
+                                ),
+                                padding: EdgeInsets.zero,
                               ),
                             ),
-                            textColor: Colors.white,
-                            color: Theme.of(context).primaryColor,
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {}
-                              model.signIn(
-                                email: _emailController.text,
-                                pass: _passController.text,
-                                onSuccess: _onSuccess,
-                                onFail: _onFail,
-                              );
-                            },
-                          ),
+                            SizedBox(
+                              height: 16.0,
+                            ),
+                            CustomButton(
+                              child: Text(
+                                "Entrar",
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              onPressed: () {
+                                if (_formKey.currentState.validate()) {}
+                                model.signIn(
+                                  email: _emailController.text,
+                                  pass: _passController.text,
+                                  onSuccess: _onSuccess,
+                                  onFail: _onFail,
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },

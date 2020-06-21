@@ -8,6 +8,7 @@ class CustomInput extends StatelessWidget {
   final TextInputType keyboardType;
   final bool enabled;
   final int maxLength;
+  final bool obscureText;
 
   CustomInput(
       {@required this.controller,
@@ -15,7 +16,8 @@ class CustomInput extends StatelessWidget {
       this.validator,
       this.keyboardType,
       this.enabled,
-      this.maxLength});
+      this.maxLength,
+      this.obscureText = false});
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class CustomInput extends StatelessWidget {
         padding: const EdgeInsets.only(top: 8, bottom: 8, left: 15),
         child: TextFormField(
           controller: controller,
+          obscureText: obscureText,
           keyboardType: keyboardType,
           enabled: enabled,
           maxLength: maxLength,

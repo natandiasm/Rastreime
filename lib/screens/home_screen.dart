@@ -18,9 +18,11 @@ class HomeScreen extends StatelessWidget {
         physics: NeverScrollableScrollPhysics(),
         children: <Widget>[
           Scaffold(
+            backgroundColor: Colors.white,
             body: HomeTab(),
             drawer: CustomDrawer(_pageController),
             floatingActionButton: FloatingActionButton(
+              backgroundColor: Theme.of(context).primaryColor,
               child: Icon(Icons.add),
               onPressed: () {
                 if (!model.isLoggedIn()) {

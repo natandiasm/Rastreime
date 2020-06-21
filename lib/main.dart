@@ -1,3 +1,4 @@
+import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/screens/home_screen.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
             primaryColor: Color.fromARGB(255, 22, 98, 187),
             fontFamily: "Red Hat Display",
+            backgroundColor: Colors.white,
             textTheme: TextTheme(
               bodyText1: TextStyle(
                 color: Color.fromARGB(255, 30, 30, 30)
@@ -29,7 +31,14 @@ class MyApp extends StatelessWidget {
             )
             ),
             
-        home: HomeScreen(),
+        home: SplashScreen.navigate(
+          name: 'assets/flare/splash-screen.flr',
+          next: (_) => HomeScreen(),
+          backgroundColor: Colors.white,
+          fit: BoxFit.cover,
+          until: () => Future.delayed(Duration(seconds: 0)),
+          startAnimation: 'play',
+        ),
       ),
     );
   }

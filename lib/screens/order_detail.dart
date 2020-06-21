@@ -60,19 +60,24 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
-                            blurRadius: 1,
-                            color: Colors.black12,
-                            offset: Offset(0, 2))
+                            blurRadius: 5,
+                            offset: Offset(0, 1),
+                            color: Color.fromARGB(255, 46, 46, 46)
+                                .withOpacity(0.1))
                       ],
                       color: Colors.white,
                     ),
                     child: ListTile(
-                      title: Text(widget.orderData['name']),
+                      title: Text(
+                        widget.orderData['name'],
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       subtitle: Text(widget.orderData['shippingcode']),
                       leading: Icon(
                         OrderModel.iconOrder(
                             category: widget.orderData['category']),
                         size: 35,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
@@ -93,16 +98,20 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                                     borderRadius: BorderRadius.circular(10),
                                     boxShadow: [
                                       BoxShadow(
-                                          blurRadius: 1,
-                                          color: Colors.black12,
-                                          offset: Offset(0, 2))
+                                          blurRadius: 5,
+                                          offset: Offset(0, 1),
+                                          color: Color.fromARGB(255, 46, 46, 46)
+                                              .withOpacity(0.1))
                                     ],
                                     color: Colors.white,
                                   ),
                                   child: Padding(
-                                    padding: const EdgeInsets.only(top: 10, bottom: 10),
+                                    padding: const EdgeInsets.only(
+                                        top: 10, bottom: 10),
                                     child: ListTile(
-                                      title: Text(evento["local"]),
+                                      title: Text(evento["local"],
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
                                       subtitle: Text(evento["status"]),
                                       trailing: Column(
                                         crossAxisAlignment:
@@ -120,13 +129,15 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                               ),
                               position: TimelineItemPosition.random,
                               iconBackground: iconAndColor[1],
-                              icon: Icon(iconAndColor[0],
+                              icon: Icon(
+                                iconAndColor[0],
                                 color: Colors.white,
                               )));
                         }
                         return Timeline(
                             children: items,
                             shrinkWrap: true,
+                            lineColor: Colors.black12,
                             position: TimelinePosition.Left);
                       } else {
                         return Center(
