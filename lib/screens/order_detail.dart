@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
+import 'package:rastreimy/models/category_model.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/util/correios.dart';
@@ -23,25 +25,35 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Correios correio = Correios();
     List<TimelineModel> items = [];
+    List<Widget> fakeBottomButtons = new List<Widget>();
+    fakeBottomButtons.add(new Container(
+      height: 68.0,
+    ));
     return Scaffold(
         key: _scaffoldKey,
+        persistentFooterButtons: fakeBottomButtons,
+        backgroundColor: Theme.of(context).backgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          iconTheme: IconThemeData(color: Color.fromARGB(255, 22, 98, 187)),
           elevation: 0.0,
           title: Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Container(
               height: 30,
               width: 30,
-              child: Image.asset(
-                'assets/images/title.png',
-                fit: BoxFit.fitHeight,
-              ),
+              child: Get.isDarkMode
+                  ? Image.asset(
+                      'assets/images/title-dark.png',
+                      fit: BoxFit.contain,
+                    )
+                  : Image.asset(
+                      'assets/images/title.png',
+                      fit: BoxFit.contain,
+                    ),
             ),
           ),
+          iconTheme: IconThemeData(color: Get.theme.primaryColor),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
@@ -65,7 +77,7 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                             color: Color.fromARGB(255, 46, 46, 46)
                                 .withOpacity(0.1))
                       ],
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                     ),
                     child: ListTile(
                       title: Text(
@@ -74,8 +86,8 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                       ),
                       subtitle: Text(widget.orderData['shippingcode']),
                       leading: Icon(
-                        OrderModel.iconOrder(
-                            category: widget.orderData['category']),
+                        CategoryModel.getIconById(
+                            name: widget.orderData['category']),
                         size: 35,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -83,13 +95,61 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                   ),
                 ),
                 FutureBuilder(
-                    future: correio.rastrear(
-                        codigo: widget.orderData['shippingcode']),
+                    future: OrderModel.getOrderById(
+                        id: widget.orderData.documentID, onFail: () {}),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        for (dynamic evento in snapshot.data["eventos"]) {
-                          dynamic iconAndColor = OrderModel.iconTrackingOrder(
-                              status: evento["status"]);
+                        if (snapshot.data["events"] != 0) {
+                          for (dynamic evento
+                              in snapshot.data["tranckingEvents"]) {
+                            dynamic iconAndColor = OrderModel.iconTrackingOrder(
+                                status: evento["status"]);
+                            items.add(TimelineModel(
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            blurRadius: 5,
+                                            offset: Offset(0, 1),
+                                            color:
+                                                Color.fromARGB(255, 46, 46, 46)
+                                                    .withOpacity(0.1))
+                                      ],
+                                      color: Theme.of(context).cardColor,
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 10, bottom: 10),
+                                      child: ListTile(
+                                        title: Text(evento["local"],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                        subtitle: Text(evento["status"]),
+                                        trailing: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text(evento["data"]),
+                                            Text(evento["hora"])
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                position: TimelineItemPosition.random,
+                                iconBackground: iconAndColor[1],
+                                icon: Icon(
+                                  iconAndColor[0],
+                                  color: Colors.white,
+                                )));
+                          }
+                        } else {
                           items.add(TimelineModel(
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 10),
@@ -103,41 +163,34 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                                           color: Color.fromARGB(255, 46, 46, 46)
                                               .withOpacity(0.1))
                                     ],
-                                    color: Colors.white,
+                                    color: Get.theme.cardColor,
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                         top: 10, bottom: 10),
                                     child: ListTile(
-                                      title: Text(evento["local"],
+                                      title: Text("Sem informação",
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold)),
-                                      subtitle: Text(evento["status"]),
-                                      trailing: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(evento["data"]),
-                                          Text(evento["hora"])
-                                        ],
-                                      ),
+                                      subtitle: Text(
+                                          "Ainda não tem informações disponiveis para esse código."),
                                     ),
                                   ),
                                 ),
                               ),
                               position: TimelineItemPosition.random,
-                              iconBackground: iconAndColor[1],
+                              iconBackground: Colors.amber,
                               icon: Icon(
-                                iconAndColor[0],
+                                LineAwesomeIcons.exclamation,
                                 color: Colors.white,
                               )));
                         }
                         return Timeline(
                             children: items,
                             shrinkWrap: true,
-                            lineColor: Colors.black12,
+                            lineColor: Get.isDarkMode
+                                ? Theme.of(context).cardColor
+                                : Colors.black12,
                             position: TimelinePosition.Left);
                       } else {
                         return Center(

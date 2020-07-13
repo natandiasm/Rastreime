@@ -1,5 +1,9 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rastreimy/models/user_model.dart';
+import 'package:rastreimy/widgets/custom_button.dart';
+import 'package:rastreimy/widgets/custom_input.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -11,14 +15,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passController = TextEditingController();
-  final _addressController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+        key: _scaffoldKey,
+        backgroundColor: Theme.of(context).backgroundColor,
         appBar: AppBar(
           title: Text("Criar Conta"),
           centerTitle: true,
@@ -34,9 +38,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: ListView(
                 padding: EdgeInsets.all(16.0),
                 children: <Widget>[
-                  TextFormField(
+                  Container(
+                      height: 200,
+                      child: Get.isDarkMode ? Image.asset('assets/images/sign-in-dark.png') : Image.asset('assets/images/sign-in.png')),
+                  CustomInput(
                     controller: _nameController,
-                    decoration: InputDecoration(hintText: "Nome Completo"),
+                    hintText: "Nome Completo",
                     validator: (text) {
                       if (text.isEmpty) return "Nome inválido!";
                     },
@@ -44,9 +51,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(
                     height: 16.0,
                   ),
-                  TextFormField(
+                  CustomInput(
                     controller: _emailController,
-                    decoration: InputDecoration(hintText: "E-mail"),
+                    hintText: "E-mail",
                     keyboardType: TextInputType.emailAddress,
                     validator: (text) {
                       if (text.isEmpty || !text.contains("@"))
@@ -56,56 +63,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   SizedBox(
                     height: 16.0,
                   ),
-                  TextFormField(
+                  CustomInput(
                     controller: _passController,
-                    decoration: InputDecoration(hintText: "Senha"),
+                    hintText: "Senha",
                     obscureText: true,
                     validator: (text) {
                       if (text.isEmpty || text.length < 6)
                         return "Senha Inválida!";
                     },
                   ),
-                  SizedBox(
-                    height: 16.0,
-                  ),
-                  TextFormField(
-                    controller: _addressController,
-                    decoration: InputDecoration(hintText: "Endereço"),
-                    validator: (text) {
-                      if (text.isEmpty) return "Endereço Inválida!";
-                    },
-                  ),
-                  SizedBox(
-                    height: 16.0,
-                  ),
-                  SizedBox(
-                    height: 44.0,
-                    child: RaisedButton(
-                      child: Text(
-                        "Criar Conta",
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  CustomButton(
+                    child: Text(
+                      "Criar Conta",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
                       ),
-                      textColor: Colors.white,
-                      color: Theme.of(context).primaryColor,
-                      onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        FirebaseMessaging().getToken().then((value) {
                           Map<String, dynamic> userData = {
                             "name": _nameController.text,
                             "email": _emailController.text,
-                            "address": _addressController.text,
+                            'tokenFCM': value,
                           };
-
                           model.signUp(
                               userData: userData,
                               pass: _passController.text,
                               onSucess: _onSucess,
                               onFail: _onFail);
-                        }
-                      },
-                    ),
+                        });
+                      }
+                    },
                   ),
                 ],
               ),
@@ -116,21 +106,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _onSucess() {
     _scaffoldKey.currentState.showSnackBar(
-      SnackBar(content: Text("Usuário criado com sucesso!"),
-      backgroundColor: Theme.of(context).primaryColor,
-      duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text("Usuário criado com sucesso!"),
+        backgroundColor: Theme.of(context).primaryColor,
+        duration: Duration(seconds: 2),
       ),
     );
-    Future.delayed(Duration(seconds: 2)).then((_){
+    Future.delayed(Duration(seconds: 2)).then((_) {
       Navigator.of(context).pop();
     });
   }
 
   void _onFail() {
-     _scaffoldKey.currentState.showSnackBar(
-      SnackBar(content: Text("Falha ao criar usuário!"),
-      backgroundColor: Colors.redAccent,
-      duration: Duration(seconds: 2),
+    _scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: Text("Falha ao criar usuário!"),
+        backgroundColor: Colors.redAccent,
+        duration: Duration(seconds: 2),
       ),
     );
   }

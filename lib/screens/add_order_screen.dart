@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/category_model.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
+import 'package:rastreimy/util/correios.dart';
+import 'package:rastreimy/util/correios.dart';
 import 'package:rastreimy/widgets/custom_button.dart';
 import 'package:rastreimy/widgets/custom_input.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -20,34 +24,57 @@ class AddOrderScreen extends StatefulWidget {
 class _AddOrderScreenState extends State<AddOrderScreen> {
   final _nameController = TextEditingController();
   final _shippingcodeController = TextEditingController();
-  String _categoriaEncomenda;
+  bool _errorCategory = false;
+  List _catEnco;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  bool _tapAddButton = false;
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     if (widget.order != null) {
-      setState(() {
+      super.setState(() {
         _nameController.text = widget.order["name"];
         _shippingcodeController.text = widget.order["shippingcode"];
-        _categoriaEncomenda = widget.order["category"];
+        _catEnco = [
+          widget.order["category"],
+          CategoryModel.getIconById(name: widget.order["category"])
+        ];
       });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> fakeBottomButtons = new List<Widget>();
+    fakeBottomButtons.add(new Container(
+      height: 40.0,
+    ));
     return Scaffold(
         key: _scaffoldKey,
+        persistentFooterButtons: fakeBottomButtons,
+        backgroundColor: Theme.of(context).backgroundColor,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          iconTheme: IconThemeData(color: Color.fromARGB(255, 22, 98, 187)),
+          iconTheme: IconThemeData(color: Get.theme.primaryColor),
           elevation: 0.0,
           title: Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Container(
               height: 30,
               width: 30,
-              child: Image.asset(
-                'assets/images/title.png',
-                fit: BoxFit.fitHeight,
-              ),
+              child: Get.isDarkMode
+                  ? Image.asset(
+                      'assets/images/title-dark.png',
+                      fit: BoxFit.contain,
+                    )
+                  : Image.asset(
+                      'assets/images/title.png',
+                      fit: BoxFit.contain,
+                    ),
             ),
           ),
           centerTitle: true,
@@ -64,19 +91,68 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                 padding: EdgeInsets.all(16.0),
                 children: <Widget>[
                   Container(
-                      height: 200,
-                      child: Image.asset('assets/images/order.png')),
-                  CustomInput(
-                    controller: _shippingcodeController,
-                    hintText: "Código",
-                    keyboardType: TextInputType.text,
-                    enabled: widget.order == null ? true : false,
-                    maxLength: 13,
-                    validator: (text) {
-                      if (text.length < 13)
-                        return "Codigo de rastreio invalido.";
-                      if (text.isEmpty) return "Digite um codigo.";
-                    },
+                    height: 200,
+                    child: Stack(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                              height: 200,
+                              child: Get.isDarkMode
+                                  ? Image.asset(
+                                      'assets/images/order-dark.png',
+                                    )
+                                  : Image.asset(
+                                      'assets/images/order.png',
+                                    )),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                                color: Get.theme.cardColor,
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 1,
+                                      spreadRadius: 0,
+                                      offset: Offset(0, 2))
+                                ],
+                                border: !_errorCategory
+                                    ? Border.all(
+                                        width: 0, color: Get.theme.cardColor)
+                                    : Border.all(width: 1, color: Colors.red),
+                                borderRadius: BorderRadius.circular(50)),
+                            child: IconButton(
+                              color: Get.theme.cardColor,
+                              icon: _catEnco == null
+                                  ? Icon(LineAwesomeIcons.tag,
+                                      color: Get.textTheme.bodyText1.color)
+                                  : Icon(_catEnco[1],
+                                      color: Get.textTheme.bodyText1.color),
+                              onPressed: _onPressSelectCategoryButton,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: CustomInput(
+                      controller: _shippingcodeController,
+                      hintText: "Código",
+                      keyboardType: TextInputType.text,
+                      enabled: widget.order == null ? true : false,
+                      maxLength: 13,
+                      validator: (text) {
+                        if (text.length < 13)
+                          return "Codigo de rastreio invalido.";
+                        if (text.isEmpty) return "Digite um codigo.";
+                      },
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 10),
@@ -88,40 +164,21 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                       },
                     ),
                   ),
-                  SizedBox(
-                    height: 16.0,
-                  ),
-                  DropDownFormField(
-                    titleText: 'Categoria',
-                    hintText: 'Escolha uma categoria',
-                    value: _categoriaEncomenda,
-                    onSaved: (value) {
-                      setState(() {
-                        _categoriaEncomenda = value;
-                      });
-                    },
-                    onChanged: (value) {
-                      setState(() {
-                        _categoriaEncomenda = value;
-                      });
-                    },
-                    validator: (text) {
-                      if (text.isEmpty) return "Digite o nome da encomenda.";
-                    },
-                    dataSource: CategoryModel.getAllCategory(),
-                    textField: 'display',
-                    valueField: 'value',
-                  ),
                   CustomButton(
-                    child: Text(
-                      widget.order == null
-                          ? "Adicionar encomenda"
-                          : "Salvar alteração",
-                      style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child: !_tapAddButton
+                        ? Text(
+                            widget.order == null
+                                ? "Adicionar encomenda"
+                                : "Salvar alteração",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : Container(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator()),
                     onPressed: () {
                       _onPressAddOrderButton(model);
                     },
@@ -133,47 +190,122 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
         ));
   }
 
+  void _onPressSelectCategoryButton() {
+    List category = CategoryModel.getIconNameAllCategory();
+    Get.defaultDialog(
+      title: "Selecione a categoria",
+      content: Column(
+        children: <Widget>[
+          Text("Arraste para exibir mais categorias"),
+          Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: Container(
+              height: 300,
+              width: Get.width,
+              child: GridView.count(
+                crossAxisCount: 2,
+                children: List.generate(category.length, (index) {
+                  return FlatButton(
+                    onPressed: () {
+                      _onPressCategoryButton(category[index][0]);
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          category[index][1],
+                          size: 40,
+                        ),
+                        Text(category[index][0])
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onPressCategoryButton(String name) {
+    setState(() {
+      _catEnco = [name, CategoryModel.getIconById(name: name)];
+    });
+    Get.back();
+  }
+
   void _onPressAddOrderButton(model) {
     if (_formKey.currentState.validate()) {
-      Map<String, dynamic> orderData = {
-        "name": _nameController.text,
-        "shippingcode": _shippingcodeController.text,
-        "category": _categoriaEncomenda,
-        "user": model.firebaseUser.uid,
-        "delivered": false,
-        "events": 0,
-      };
-      if (widget.order != null) {
-        OrderModel.updateOrder(
-            order: widget.order,
-            orderData: orderData,
-            onFail: () {
-              _scaffoldKey.currentState.showSnackBar(
-                SnackBar(
-                  content: Text("Não foi possivel atualizar sua encomenda."),
-                  backgroundColor: Colors.redAccent,
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-            onSucess: () {
-              Navigator.of(context).pop();
+      if (_catEnco != null) {
+        if (!_tapAddButton) {
+          setState(() {
+            _tapAddButton = true;
+            _errorCategory = false;
+          });
+          if (widget.order == null) {
+            Correios()
+                .rastrear(codigo: _shippingcodeController.text)
+                .then((correiosData) {
+              List<dynamic> tranckingEvents = correiosData["quantidade"] == 0
+                  ? []
+                  : correiosData["eventos"];
+              Map<String, dynamic> orderData = {
+                "name": _nameController.text,
+                "shippingcode": _shippingcodeController.text,
+                "category": _catEnco[0],
+                "carrier": "correios",
+                "user": model.firebaseUser.uid,
+                "delivered": false,
+                "events": correiosData["quantidade"],
+                "tranckingEvents": tranckingEvents
+              };
+              OrderModel.addOrder(
+                  orderData: orderData,
+                  onFail: () {
+                    setState(() {
+                      _tapAddButton = false;
+                    });
+                    Get.snackbar("Não foi possivel",
+                        "Não foi possivel adicionar a sua encomenda.");
+                  },
+                  onSucess: () {
+                    Navigator.of(context).pop();
+                  });
             });
+          } else {
+            Map<String, dynamic> orderData = {
+              "name": _nameController.text,
+              "shippingcode": _shippingcodeController.text,
+              "category": _catEnco[0],
+            };
+            OrderModel.updateOrder(
+                order: widget.order,
+                orderData: orderData,
+                onFail: () {
+                  setState(() {
+                    _tapAddButton = false;
+                  });
+                  _scaffoldKey.currentState.showSnackBar(
+                    SnackBar(
+                      content:
+                          Text("Não foi possivel atualizar sua encomenda."),
+                      backgroundColor: Colors.redAccent,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+                onSucess: () {
+                  Navigator.of(context).pop();
+                });
+          }
+        }
       } else {
-        OrderModel.addOrder(
-            orderData: orderData,
-            onFail: () {
-              _scaffoldKey.currentState.showSnackBar(
-                SnackBar(
-                  content: Text("Não foi possivel adicionar a encomenda"),
-                  backgroundColor: Colors.redAccent,
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-            onSucess: () {
-              Navigator.of(context).pop();
-            });
+        setState(() {
+          _errorCategory = true;
+        });
       }
     }
   }

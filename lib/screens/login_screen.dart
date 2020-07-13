@@ -1,5 +1,6 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/screens/signup_screen.dart';
 import 'package:rastreimy/widgets/custom_button.dart';
@@ -21,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Get.theme.backgroundColor,
       appBar: AppBar(
         title: Text("Entrar"),
         elevation: 0,
@@ -55,10 +57,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   width: double.maxFinite,
                   height: 400,
-                  child: FlareActor("assets/flare/bg-login.flr",
-                      alignment: Alignment.center,
-                      fit: BoxFit.cover,
-                      animation: "start"),
+                  child: Get.isDarkMode
+                      ? FlareActor("assets/flare/bg-login-dark.flr",
+                          alignment: Alignment.center,
+                          fit: BoxFit.cover,
+                          animation: "start")
+                      : FlareActor("assets/flare/bg-login.flr",
+                          alignment: Alignment.center,
+                          fit: BoxFit.cover,
+                          animation: "start"),
                 ),
                 Container(
                   child: Column(
@@ -68,7 +75,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Hero(
                               tag: "icon-login",
                               transitionOnUserGestures: true,
-                              child: Image.asset('assets/images/login.png'))),
+                              child: Get.isDarkMode
+                                  ? Image.asset('assets/images/login-dark.png')
+                                  : Image.asset('assets/images/login.png'))),
                       Form(
                         key: _formKey,
                         child: ListView(

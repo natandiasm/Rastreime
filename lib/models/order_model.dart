@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/util/correios.dart';
@@ -35,7 +36,7 @@ class OrderModel {
     _database
         .collection('orders')
         .document(order.documentID)
-        .setData(orderData)
+        .updateData(orderData)
         .catchError((e) {
       onFail();
     });
@@ -56,81 +57,101 @@ class OrderModel {
     onSucess();
   }
 
-  static listOrder({@required UserModel user, @required VoidCallback onFail}) {
+  static VoidCallback removeOrderUI(
+      {@required DocumentSnapshot order}) {
+    Widget cancelaButton = FlatButton(
+      child: Text("Cancelar"),
+      onPressed: () {
+        Get.back();
+      },
+    );
+    Widget continuaButton = FlatButton(
+      child: Text(
+        "Continuar",
+        style: TextStyle(color: Colors.deepOrange, fontWeight: FontWeight.bold),
+      ),
+      onPressed: () {
+        removeOrder(
+            order: order,
+            onSucess: () {
+              Get.back();
+            },
+            onFail: () {
+              Get.snackbar('Não foi excluido.', 'Não foi possivel fazer a exclusão da encomenda.');
+            });
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      title: Text(
+        "Exclusão da encomenda",
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      content:
+      Text("A sua encomenda será excluida da sua conta, deseja continuar?"),
+      actions: [
+        cancelaButton,
+        continuaButton,
+      ],
+    );
+    Get.dialog(alert);
+  }
+
+  static listOrder(
+      {@required UserModel user,
+      @required VoidCallback onFail,
+      @required bool delivered}) {
     Stream<QuerySnapshot> snapshots;
-    snapshots = _database
-        .collection('orders')
-        .where("user", isEqualTo: user.firebaseUser.uid)
-        .snapshots();
+    if (delivered == null) {
+      snapshots = _database
+          .collection('orders')
+          .where("user", isEqualTo: user.firebaseUser.uid)
+          .snapshots();
+    } else {
+      snapshots = _database
+          .collection('orders')
+          .where("user", isEqualTo: user.firebaseUser.uid)
+          .where("delivered", isEqualTo: delivered)
+          .snapshots();
+    }
     return snapshots;
   }
 
-  static iconOrder({@required String category}) {
-    switch (category) {
-      case "eletronico":
-        return LineAwesomeIcons.headphones;
-        break;
-      case "smartphone":
-        return LineAwesomeIcons.mobile_phone;
-        break;
-      case "computador":
-        return LineAwesomeIcons.laptop;
-        break;
-      case "jogo":
-        return LineAwesomeIcons.gamepad;
-        break;
-      case "eletrodomestico":
-        return LineAwesomeIcons.tv;
-        break;
-      case "livro":
-        return LineAwesomeIcons.book;
-        break;
-      case "ferramenta":
-        return LineAwesomeIcons.wrench;
-        break;
-      case "esporte":
-        return LineAwesomeIcons.futbol_o;
-        break;
-      case "roupa":
-        return LineAwesomeIcons.female;
-        break;
-      case "bolsa":
-        return LineAwesomeIcons.briefcase;
-        break;
-      case "comida":
-        return LineAwesomeIcons.coffee;
-        break;
-      default:
-        return LineAwesomeIcons.plus;
-        break;
-    }
+  static Future<DocumentSnapshot> getOrderById(
+      {@required String id, @required VoidCallback onFail}) {
+    Future<DocumentSnapshot> snapshots;
+    snapshots = _database.collection('orders').document(id).get();
+    return snapshots;
   }
 
   static iconTrackingOrder({@required String status}) {
-    switch (status) {
-      case "Objeto postado":
+    switch (status.toLowerCase()) {
+      case "objeto postado":
         return [LineAwesomeIcons.cube, Colors.grey];
         break;
-      case "Objeto encaminhado":
-        return [LineAwesomeIcons.truck, Color.fromARGB(255, 22, 98, 187)];
+      case "objeto encaminhado":
+        return [LineAwesomeIcons.truck, Get.theme.primaryColor];
         break;
-      case "Objeto recebido na unidade de exportação no país de origem":
+      case "objeto recebido na unidade de exportação no país de origem":
         return [LineAwesomeIcons.plane, Colors.green];
         break;
-      case "Objeto recebido pelos Correios do Brasil":
+      case "objeto recebido pelos Correios do Brasil":
         return [LineAwesomeIcons.globe, Colors.green];
         break;
-      case "Fiscalização aduaneira finalizada":
+      case "fiscalização aduaneira finalizada":
         return [LineAwesomeIcons.frown_o, Colors.orange];
         break;
-      case "Objeto aguardando retirada no endereço indicado":
+      case "objeto aguardando retirada no endereço indicado":
         return [LineAwesomeIcons.street_view, Colors.amber];
         break;
-      case "Objeto entregue ao destinatário":
+      case "objeto ainda não chegou à unidade":
+        return [LineAwesomeIcons.exclamation, Colors.deepOrangeAccent];
+        break;
+      case "objeto entregue ao destinatário":
         return [LineAwesomeIcons.smile_o, Colors.lightGreen];
         break;
       default:
-        return [LineAwesomeIcons.truck, Color.fromARGB(255, 22, 98, 187)];
+        return [LineAwesomeIcons.truck, Get.theme.primaryColor];
         break;
     }
   }

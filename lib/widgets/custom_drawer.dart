@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/screens/login_screen.dart';
 import 'package:rastreimy/tiles/drawer_tile.dart';
+import 'package:rastreimy/util/themeData_util.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomDrawer extends StatelessWidget {
   final PageController pageController;
@@ -13,9 +16,7 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget _buildDrawerBack() => Container(
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 252, 252, 252)
-          ),
+          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
         );
 
     return Drawer(
@@ -37,14 +38,31 @@ class CustomDrawer extends StatelessWidget {
                 child: Stack(
                   children: <Widget>[
                     Positioned(
-                      top: 25.0,
-                      left: 0.0,
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        child: Image.asset('assets/images/title.png')
-                        )
+                      right: 0,
+                      child: IconButton(
+                          icon: Icon(Get.isDarkMode
+                              ? Icons.wb_sunny
+                              : Icons.brightness_2),
+                          onPressed: () async {
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            Get.isDarkMode
+                                ? prefs.setBool("themeDark", false)
+                                : prefs.setBool("themeDark", true);
+                            Get.changeThemeMode(Get.isDarkMode
+                                ? ThemeMode.light
+                                : ThemeMode.dark);
+                          }),
                     ),
+                    Positioned(
+                        top: 25.0,
+                        left: 0.0,
+                        child: Container(
+                            width: 50,
+                            height: 50,
+                            child: Get.isDarkMode
+                                ? Image.asset('assets/images/title-dark.png')
+                                : Image.asset('assets/images/title.png'))),
                     Positioned(
                       left: 0.0,
                       bottom: 0.0,
@@ -72,14 +90,14 @@ class CustomDrawer extends StatelessWidget {
                                       fontWeight: FontWeight.bold),
                                 ),
                                 onTap: () {
-                                  if(!model.isLoggedIn())
+                                  if (!model.isLoggedIn())
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                           builder: (context) => LoginScreen()),
                                     );
-                                    else
-                                      model.signOut();
-                                  },
+                                  else
+                                    model.signOut();
+                                },
                               ),
                             ],
                           );
@@ -97,14 +115,14 @@ class CustomDrawer extends StatelessWidget {
                 0,
               ),
               DrawerTile(
-                LineAwesomeIcons.truck,
-                "Pedidos",
+                LineAwesomeIcons.check_circle,
+                "Entregues",
                 pageController,
                 1,
               ),
               DrawerTile(
-                LineAwesomeIcons.phone,
-                "Contato",
+                LineAwesomeIcons.info,
+                "Sobre",
                 pageController,
                 2,
               ),

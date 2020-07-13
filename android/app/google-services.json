@@ -1,0 +1,41 @@
+{
+  "project_info": {
+    "project_number": "506343043927",
+    "firebase_url": "https://rastreimy-b66b8.firebaseio.com",
+    "project_id": "rastreimy-b66b8",
+    "storage_bucket": "rastreimy-b66b8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:506343043927:android:a29895dc5c002bd99f0412",
+        "android_client_info": {
+          "package_name": "tech.undatus.rastreimy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "506343043927-6j8oq6t2b10kf2p34o1h9rvr2ju6n2bi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAGIGiU6Y4RkgXFKwrcIRDZkzeB9hKASU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "506343043927-6j8oq6t2b10kf2p34o1h9rvr2ju6n2bi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-6043006820068692~9899327824"
+    }
+  ],
+  "configuration_version": "1"
+}

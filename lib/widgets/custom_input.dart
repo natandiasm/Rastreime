@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 
 class CustomInput extends StatelessWidget {
   final TextEditingController controller;
@@ -23,7 +24,7 @@ class CustomInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Get.theme.cardColor,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(

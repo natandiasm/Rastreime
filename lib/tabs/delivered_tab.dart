@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -13,7 +12,7 @@ import 'package:rastreimy/screens/order_detail.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shimmer/shimmer.dart';
 
-class HomeTab extends StatelessWidget {
+class DeliveredTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget _buildListTile(BuildContext context, DocumentSnapshot document) {
@@ -32,7 +31,7 @@ class HomeTab extends StatelessWidget {
             color: Theme.of(context).cardColor,
           ),
           child: Slidable(
-            actionPane: SlidableDrawerActionPane(),
+            actionPane: SlidableScrollActionPane(),
             actionExtentRatio: 0.25,
             actions: <Widget>[
               IconSlideAction(
@@ -58,7 +57,7 @@ class HomeTab extends StatelessWidget {
                 document['name'],
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              subtitle: document["events"] != 0
+              subtitle: document["quantidade"] != 0
                   ? Container(
                       child: Text(
                       document["tranckingEvents"][0]["local"],
@@ -73,14 +72,12 @@ class HomeTab extends StatelessWidget {
                   CategoryModel.getIconById(name: document['category']),
                   size: 35,
                   color: Theme.of(context).primaryColor),
-              trailing: document["events"] != 0
-                  ? Icon(
-                      OrderModel.iconTrackingOrder(
-                          status: document["tranckingEvents"][0]["status"])[0],
-                      size: 30,
-                      color: Theme.of(context).primaryColor,
-                    )
-                  : Icon(LineAwesomeIcons.question),
+              trailing: Icon(
+                OrderModel.iconTrackingOrder(
+                    status: document["tranckingEvents"][0]["status"])[0],
+                size: 30,
+                color: Theme.of(context).primaryColor,
+              ),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -110,12 +107,7 @@ class HomeTab extends StatelessWidget {
                           height: 200,
                           child: Hero(
                               tag: "icon-login",
-                              child: Get.isDarkMode
-                                  ? Image.asset(
-                                      'assets/images/login-dark.png',
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.asset('assets/images/login.png'))),
+                              child: Image.asset('assets/images/login.png'))),
                       Text(
                         "Faça login ou crie uma conta \npara salvar suas encomendas",
                         textAlign: TextAlign.center,
@@ -159,7 +151,7 @@ class HomeTab extends StatelessWidget {
               padding: const EdgeInsets.only(top: 50),
               child: StreamBuilder<QuerySnapshot>(
                   stream: OrderModel.listOrder(
-                      user: model, delivered: false, onFail: () {}),
+                      user: model, delivered: true, onFail: () {}),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (!snapshot.hasData) {
@@ -188,13 +180,13 @@ class HomeTab extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    "Olá, ${model.userData["name"]}",
+                                    "Opa, bora relembrar?",
                                     style: TextStyle(
                                         fontSize: 25,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
-                                      "Vamos ver como estão suas encomendas hoje."),
+                                      "Aqui estão todas as suas encomendas que já foram entregues."),
                                 ],
                               ),
                             ),
@@ -216,16 +208,10 @@ class HomeTab extends StatelessWidget {
                                   children: <Widget>[
                                     Container(
                                         height: 200,
-                                        child: Get.isDarkMode
-                                            ? Image.asset(
-                                                'assets/images/empty-order-dark.png')
-                                            : Image.asset(
-                                                'assets/images/empty-order.png')),
+                                        child: Image.asset(
+                                            'assets/images/empty-order.png')),
                                     Text(
-                                      "Você não tem encomendas cadastradas ou elas já foram todas entregues.",
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    Text("Para adicionar, toque no botão +")
+                                        "Você não tem encomendas entregues ainda.")
                                   ],
                                 ),
                               ),
@@ -247,7 +233,6 @@ class HomeTab extends StatelessWidget {
                 snap: true,
                 backgroundColor: Colors.transparent,
                 elevation: 0.0,
-                actionsIconTheme: IconThemeData(color: Get.theme.primaryColor),
                 flexibleSpace: FlexibleSpaceBar(
                   title: Padding(
                     padding: const EdgeInsets.only(top: 10),

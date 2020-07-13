@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -23,7 +24,6 @@ class UserModel extends Model {
       @required VoidCallback onFail}) {
     isLoading = true;
     notifyListeners();
-
     _auth
         .createUserWithEmailAndPassword(
             email: userData["email"], password: pass)
@@ -35,6 +35,7 @@ class UserModel extends Model {
       notifyListeners();
     }).catchError((e) {
       isLoading = false;
+      print(e);
       notifyListeners();
       onFail();
     });
@@ -47,11 +48,13 @@ class UserModel extends Model {
       @required VoidCallback onFail}) async {
     isLoading = true;
     notifyListeners();
-
     _auth
         .signInWithEmailAndPassword(email: email, password: pass)
         .then((authResult) async {
       firebaseUser = authResult.user;
+      FirebaseMessaging()
+          .getToken()
+          .then((value) => _updateUserData({'tokenFCM': value}));
 
       await _loadCurrentUser();
 
@@ -86,6 +89,13 @@ class UserModel extends Model {
         .collection("users")
         .document(firebaseUser.uid)
         .setData(userData);
+  }
+
+  Future<Null> _updateUserData(Map<String, dynamic> userData) async {
+    await Firestore.instance
+        .collection("users")
+        .document(firebaseUser.uid)
+        .updateData(userData);
   }
 
   Future<Null> _loadCurrentUser() async {

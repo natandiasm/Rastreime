@@ -1,16 +1,15 @@
-# rastreimy
+![](https://undatus.tech/wp-content/uploads/2020/06/icon-mail.png)
+# Rastreimy
+[![Codemagic build status](https://api.codemagic.io/apps/5f0c442a7f5156000dfc334d/5f0c442a7f5156000dfc334c/status_badge.svg)](https://codemagic.io/apps/5f0c442a7f5156000dfc334d/5f0c442a7f5156000dfc334c/latest_build)
 
-A new Flutter application.
+Aplicativo de rastreio de encomenda dos correios e outras transportadoras.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+### Features
 
-A few resources to get you started if this is your first Flutter project:
+- Adiciona, Edita e Exclue encomendas.
+- Procura por atualizações no backend.
+- Rastreio de encomendas pelo correios.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Proximas Features
+- Rastreio de encomendas pela transportadora SequoiaLog.

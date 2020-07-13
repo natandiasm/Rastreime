@@ -26,7 +26,7 @@ class DrawerTile extends StatelessWidget {
                 size: 32.0,
                 color: controller.page == page.round()
                     ? Theme.of(context).primaryColor
-                    : Color.fromARGB(255, 30, 30, 30),
+                    : Theme.of(context).textTheme.bodyText1.color,
               ),
               SizedBox(
                 width: 32.0,
@@ -38,7 +38,7 @@ class DrawerTile extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: controller.page == page.round()
                       ? Theme.of(context).primaryColor
-                      : Color.fromARGB(255, 30, 30, 30),
+                      : Theme.of(context).textTheme.bodyText1.color,
                 ),
               )
             ],

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class Correios {
   final Dio _dio = Dio();
-  final String _user = "teste";
+  final String _user = "undatustech@gmail.com";
   final String _token =
-      "1abcd00b2731640e886fb41a8a9671ad1434c599dbaa0a0de9a5aa619f29a83f";
+      "5f203d17761c187eff9410f23492083b7a1bad4f983de4b23f652a57eda8bc67";
 
   Future<dynamic> rastrear({@required String codigo}) async {
     try {
@@ -13,7 +13,7 @@ class Correios {
           "https://api.linketrack.com/track/json?user=$_user&token=$_token&codigo=$codigo");
       return response.data;
     } catch (e) {
-        return rastrear(codigo: codigo);
+      return rastrear(codigo: codigo);
     }
   }
 }
