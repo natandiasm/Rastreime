@@ -5,7 +5,7 @@ import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/category_model.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
-import 'package:rastreimy/util/correios.dart';
+import 'package:rastreimy/util/dateWeekends.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeline_list/timeline.dart';
@@ -61,7 +61,24 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
           child: ScopedModelDescendant<UserModel>(
               builder: (context, child, model) {
             if (model.isLoading) return CircularProgressIndicator();
-
+            DateTime dateStart;
+            DateTime dateFinal;
+            if (widget.orderData["events"] != 0) {
+              List dateString = widget.orderData["tranckingEvents"]
+                      [widget.orderData["events"] - 1]["data"]
+                  .split("/");
+              dateStart = DateTime(int.parse(dateString[2]),
+                  int.parse(dateString[1]), int.parse(dateString[0]));
+              if (widget.orderData["delivered"]) {
+                List dateFinalString =
+                    widget.orderData["tranckingEvents"][0]["data"].split("/");
+                dateFinal = DateTime(
+                    int.parse(dateFinalString[2]),
+                    int.parse(dateFinalString[1]),
+                    int.parse(dateFinalString[0]));
+              } else
+                dateFinal = DateTime.now();
+            }
             return Column(
               children: <Widget>[
                 Padding(
@@ -83,6 +100,24 @@ class _OrderDetailScreen extends State<OrderDetailScreen> {
                       title: Text(
                         widget.orderData['name'],
                         style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      trailing: Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            widget.orderData["events"] != 0
+                                ? Text(
+                                    "${DateWeekends.getDifferenceWithoutWeekends(dateStart, dateFinal)}",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  )
+                                : Text("0",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                            Text("Dias úteis"),
+                          ],
+                        ),
                       ),
                       subtitle: Text(widget.orderData['shippingcode']),
                       leading: Icon(

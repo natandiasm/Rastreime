@@ -4,7 +4,6 @@ import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/screens/login_screen.dart';
 import 'package:rastreimy/tiles/drawer_tile.dart';
-import 'package:rastreimy/util/themeData_util.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -132,9 +132,13 @@ class _MyAppState extends State<MyApp> {
                 width: double.maxFinite,
                 height: double.maxFinite,
                 color: Colors.white,
-                child: Image.asset(
-                  'assets/images/title.png',
-                  fit: BoxFit.fill,
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  child: Image.asset(
+                    'assets/images/title.png',
+                    fit: BoxFit.contain,
+                  ),
                 )),
           );
         }

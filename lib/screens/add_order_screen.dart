@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dropdown_formfield/dropdown_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/category_model.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
-import 'package:rastreimy/util/correios.dart';
 import 'package:rastreimy/util/correios.dart';
 import 'package:rastreimy/widgets/custom_button.dart';
 import 'package:rastreimy/widgets/custom_input.dart';
@@ -33,7 +31,6 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (widget.order != null) {
       super.setState(() {
@@ -148,9 +145,11 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                       enabled: widget.order == null ? true : false,
                       maxLength: 13,
                       validator: (text) {
+                        if (!Correios().isValidOrderCode(text))
+                          return "Codigo de rastreio invalido";
                         if (text.length < 13)
-                          return "Codigo de rastreio invalido.";
-                        if (text.isEmpty) return "Digite um codigo.";
+                          return "Código de rastreio incompleto.";
+                        if (text.isEmpty) return "Digite um código.";
                       },
                     ),
                   ),
@@ -196,7 +195,10 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
       title: "Selecione a categoria",
       content: Column(
         children: <Widget>[
-          Text("Arraste para exibir mais categorias"),
+          Text(
+            "Arraste para exibir mais categorias",
+            style: TextStyle(color: Get.theme.primaryColor),
+          ),
           Padding(
             padding: const EdgeInsets.only(top: 15),
             child: Container(
@@ -260,7 +262,8 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                 "user": model.firebaseUser.uid,
                 "delivered": false,
                 "events": correiosData["quantidade"],
-                "tranckingEvents": tranckingEvents
+                "tranckingEvents": tranckingEvents,
+                "createDate": DateTime.now()
               };
               OrderModel.addOrder(
                   orderData: orderData,
@@ -268,17 +271,16 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                     setState(() {
                       _tapAddButton = false;
                     });
-                    Get.snackbar("Não foi possivel",
-                        "Não foi possivel adicionar a sua encomenda.");
+                    Get.snackbar(
+                        "Erro", "Não foi possivel adicionar a sua encomenda.");
                   },
                   onSucess: () {
-                    Navigator.of(context).pop();
+                    Get.back();
                   });
             });
           } else {
             Map<String, dynamic> orderData = {
               "name": _nameController.text,
-              "shippingcode": _shippingcodeController.text,
               "category": _catEnco[0],
             };
             OrderModel.updateOrder(
@@ -288,17 +290,11 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                   setState(() {
                     _tapAddButton = false;
                   });
-                  _scaffoldKey.currentState.showSnackBar(
-                    SnackBar(
-                      content:
-                          Text("Não foi possivel atualizar sua encomenda."),
-                      backgroundColor: Colors.redAccent,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
+                  Get.snackbar(
+                      "Erro", "Não foi possivel atualizar sua encomenda.");
                 },
                 onSucess: () {
-                  Navigator.of(context).pop();
+                  Get.back();
                 });
           }
         }
