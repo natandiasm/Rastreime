@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
@@ -6,6 +7,8 @@ class CustomInput extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final Function validator;
+  final TextCapitalization textCapitalization;
+  final List<TextInputFormatter> inputFormatters;
   final TextInputType keyboardType;
   final bool enabled;
   final int maxLength;
@@ -15,6 +18,8 @@ class CustomInput extends StatelessWidget {
       {@required this.controller,
       @required this.hintText,
       this.validator,
+      this.inputFormatters,
+      this.textCapitalization,
       this.keyboardType,
       this.enabled,
       this.maxLength,
@@ -40,6 +45,7 @@ class CustomInput extends StatelessWidget {
           obscureText: obscureText,
           keyboardType: keyboardType,
           enabled: enabled,
+          inputFormatters: inputFormatters != null ? inputFormatters : [],
           maxLength: maxLength,
           decoration: InputDecoration(
               hintText: hintText,

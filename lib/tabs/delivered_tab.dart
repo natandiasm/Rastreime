@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/category_model.dart';
@@ -193,15 +194,28 @@ class DeliveredTab extends StatelessWidget {
                           ),
                         ),
                         snapshot.data.documents.length != 0
-                            ? ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: snapshot.data.documents.length,
-                                itemBuilder: (context, item) {
-                                  return _buildListTile(
-                                      context, snapshot.data.documents[item]);
-                                })
+                            ? AnimationLimiter(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: snapshot.data.documents.length,
+                              itemBuilder: (context, item) {
+                                return AnimationConfiguration
+                                    .staggeredList(
+                                  position: item,
+                                  duration:
+                                  const Duration(milliseconds: 400),
+                                  child: SlideAnimation(
+                                    verticalOffset: 50.0,
+                                    child: FadeInAnimation(
+                                      child: _buildListTile(context,
+                                          snapshot.data.documents[item]),
+                                    ),
+                                  ),
+                                );
+                              }),
+                        )
                             : Padding(
                                 padding: const EdgeInsets.only(top: 100),
                                 child: Column(

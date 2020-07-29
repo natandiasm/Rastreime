@@ -138,6 +138,15 @@ class OrderModel {
       case "objeto recebido pelos Correios do Brasil":
         return [LineAwesomeIcons.globe, Colors.green];
         break;
+      case "objeto saiu para entrega ao destinatário":
+        return [LineAwesomeIcons.bicycle, Colors.lightBlue];
+        break;
+      case "endereço incorreto - entrega não realizada":
+        return [LineAwesomeIcons.exclamation, Colors.deepOrangeAccent];
+        break;
+      case "aguardando pagamento do despacho postal":
+        return [LineAwesomeIcons.dollar, Colors.amber];
+        break;
       case "fiscalização aduaneira finalizada":
         return [LineAwesomeIcons.frown_o, Colors.orange];
         break;
