@@ -61,7 +61,7 @@ class DeliveredTab extends StatelessWidget {
               subtitle: document["quantidade"] != 0
                   ? Container(
                       child: Text(
-                      document["tranckingEvents"][0]["local"],
+                      "${document["tranckingEvents"][0]["local"]} - ${document["tranckingEvents"][0]["status"]}",
                       style: TextStyle(fontSize: 13.0),
                     ))
                   : Container(
@@ -195,27 +195,27 @@ class DeliveredTab extends StatelessWidget {
                         ),
                         snapshot.data.documents.length != 0
                             ? AnimationLimiter(
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: snapshot.data.documents.length,
-                              itemBuilder: (context, item) {
-                                return AnimationConfiguration
-                                    .staggeredList(
-                                  position: item,
-                                  duration:
-                                  const Duration(milliseconds: 400),
-                                  child: SlideAnimation(
-                                    verticalOffset: 50.0,
-                                    child: FadeInAnimation(
-                                      child: _buildListTile(context,
-                                          snapshot.data.documents[item]),
-                                    ),
-                                  ),
-                                );
-                              }),
-                        )
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.vertical,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: snapshot.data.documents.length,
+                                    itemBuilder: (context, item) {
+                                      return AnimationConfiguration
+                                          .staggeredList(
+                                        position: item,
+                                        duration:
+                                            const Duration(milliseconds: 400),
+                                        child: SlideAnimation(
+                                          verticalOffset: 50.0,
+                                          child: FadeInAnimation(
+                                            child: _buildListTile(context,
+                                                snapshot.data.documents[item]),
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                              )
                             : Padding(
                                 padding: const EdgeInsets.only(top: 100),
                                 child: Column(

@@ -9,6 +9,7 @@ import 'package:intro_slider/slide_object.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/screens/home_screen.dart';
+import 'package:rastreimy/screens/login_screen.dart';
 import 'package:rastreimy/screens/order_detail.dart';
 import 'package:rastreimy/util/themeData_util.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -230,7 +231,7 @@ class _MyAppState extends State<MyApp> {
       showBanner();
       return SplashScreen.navigate(
         name: 'assets/flare/splash-screen.flr',
-        next: (_) => HomeScreen(),
+        next: (_) => LoginScreen(),
         backgroundColor: Colors.white,
         fit: BoxFit.cover,
         until: () => Future.delayed(Duration(seconds: 0)),
