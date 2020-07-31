@@ -53,40 +53,42 @@ class DeliveredTab extends StatelessWidget {
                     OrderModel.removeOrderUI(order: document);
                   }),
             ],
-            child: ListTile(
-              title: Text(
-                document['name'],
-                style: TextStyle(fontWeight: FontWeight.bold),
+            child: Center(
+              child: ListTile(
+                title: Text(
+                  document['name'],
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: document["quantidade"] != 0
+                    ? Container(
+                        child: Text(
+                        "${document["tranckingEvents"][0]["local"]} - ${document["tranckingEvents"][0]["status"]}",
+                        style: TextStyle(fontSize: 13.0),
+                      ))
+                    : Container(
+                        child: Text(
+                        "Ainda não tem informações.",
+                        style: TextStyle(fontSize: 13.0),
+                      )),
+                leading: Icon(
+                    CategoryModel.getIconById(name: document['category']),
+                    size: 35,
+                    color: Theme.of(context).primaryColor),
+                trailing: Icon(
+                  OrderModel.iconTrackingOrder(
+                      status: document["tranckingEvents"][0]["status"])[0],
+                  size: 30,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => OrderDetailScreen(
+                              orderData: document,
+                            )),
+                  );
+                },
               ),
-              subtitle: document["quantidade"] != 0
-                  ? Container(
-                      child: Text(
-                      "${document["tranckingEvents"][0]["local"]} - ${document["tranckingEvents"][0]["status"]}",
-                      style: TextStyle(fontSize: 13.0),
-                    ))
-                  : Container(
-                      child: Text(
-                      "Ainda não tem informações.",
-                      style: TextStyle(fontSize: 13.0),
-                    )),
-              leading: Icon(
-                  CategoryModel.getIconById(name: document['category']),
-                  size: 35,
-                  color: Theme.of(context).primaryColor),
-              trailing: Icon(
-                OrderModel.iconTrackingOrder(
-                    status: document["tranckingEvents"][0]["status"])[0],
-                size: 30,
-                color: Theme.of(context).primaryColor,
-              ),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => OrderDetailScreen(
-                            orderData: document,
-                          )),
-                );
-              },
             ),
           ),
         ),
