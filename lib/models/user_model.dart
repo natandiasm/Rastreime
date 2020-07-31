@@ -79,7 +79,7 @@ class UserModel extends Model {
         .sendPasswordResetEmail(email: email)
         .then((value) => {
               Get.snackbar("Confira seu e-mail",
-                  "Será enviado um e-mail para você com as instruções",
+                  "Será enviado um e-mail para você com as instruções de recuperação",
                   backgroundColor: Get.theme.cardColor,
                   duration: Duration(seconds: 8))
             })
