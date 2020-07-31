@@ -98,6 +98,12 @@ class UserModel extends Model {
               backgroundColor: Get.theme.cardColor,
               duration: Duration(seconds: 8));
           break;
+        default:
+          Get.snackbar(
+              "Não foi possivel a solicitação", "Por favor tente mais tarde",
+              backgroundColor: Get.theme.cardColor,
+              duration: Duration(seconds: 8));
+          break;
       }
     });
   }
