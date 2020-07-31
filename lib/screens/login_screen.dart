@@ -1,6 +1,7 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/screens/signup_screen.dart';
 import 'package:rastreimy/widgets/custom_button.dart';
@@ -111,24 +112,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: FlatButton(
                                 onPressed: () {
                                   if (_emailController.text.isEmpty) {
-                                    _scaffoldKey.currentState.showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                            "Insira seu e-mail para recupeção!"),
-                                        backgroundColor: Colors.redAccent,
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
+                                    Get.snackbar("Atenção",
+                                        "Coloque primeiro seu e-mail para recupeção!",
+                                        backgroundColor: Get.theme.cardColor,
+                                        icon:
+                                            Icon(LineAwesomeIcons.exclamation));
                                   } else {
-                                    model.recoverPass(_emailController.text);
-                                    _scaffoldKey.currentState.showSnackBar(
-                                      SnackBar(
-                                        content: Text("Confira seu e-mail"),
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        duration: Duration(seconds: 2),
-                                      ),
-                                    );
+                                      model.recoverPass(_emailController.text);
                                   }
                                 },
                                 child: Text(
@@ -174,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _onSuccess() {
-    Navigator.of(context).pop();
+    Get.back();
   }
 
   void _onFail() {

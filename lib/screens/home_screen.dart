@@ -64,7 +64,7 @@ class HomeScreen extends StatelessWidget {
               child: Icon(
                 Icons.add,
                 color: Get.isDarkMode
-                    ? Theme.of(context).textTheme.bodyText1.color
+                    ? Get.textTheme.bodyText1.color
                     : Colors.white,
               ),
               onPressed: () {

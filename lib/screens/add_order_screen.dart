@@ -6,6 +6,7 @@ import 'package:rastreimy/models/category_model.dart';
 import 'package:rastreimy/models/order_model.dart';
 import 'package:rastreimy/models/user_model.dart';
 import 'package:rastreimy/util/correios.dart';
+import 'package:rastreimy/util/upperCaseTextFormatter.dart';
 import 'package:rastreimy/widgets/custom_button.dart';
 import 'package:rastreimy/widgets/custom_input.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -120,7 +121,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                                 border: !_errorCategory
                                     ? Border.all(
                                         width: 0, color: Get.theme.cardColor)
-                                    : Border.all(width: 1, color: Colors.red),
+                                    : Border.all(width: 2, color: Colors.red),
                                 borderRadius: BorderRadius.circular(50)),
                             child: IconButton(
                               color: Get.theme.cardColor,
@@ -141,9 +142,13 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                     child: CustomInput(
                       controller: _shippingcodeController,
                       hintText: "Código",
+                      textCapitalization: TextCapitalization.characters,
                       keyboardType: TextInputType.text,
                       enabled: widget.order == null ? true : false,
                       maxLength: 13,
+                      inputFormatters: [
+                        UpperCaseTextFormatter(),
+                      ],
                       validator: (text) {
                         if (!Correios().isValidOrderCode(text))
                           return "Codigo de rastreio invalido";

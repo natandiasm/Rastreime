@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:line_awesome_icons/line_awesome_icons.dart';
 import 'package:rastreimy/models/category_model.dart';
@@ -52,40 +53,42 @@ class DeliveredTab extends StatelessWidget {
                     OrderModel.removeOrderUI(order: document);
                   }),
             ],
-            child: ListTile(
-              title: Text(
-                document['name'],
-                style: TextStyle(fontWeight: FontWeight.bold),
+            child: Center(
+              child: ListTile(
+                title: Text(
+                  document['name'],
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: document["quantidade"] != 0
+                    ? Container(
+                        child: Text(
+                        "${document["tranckingEvents"][0]["local"]} - ${document["tranckingEvents"][0]["status"]}",
+                        style: TextStyle(fontSize: 13.0),
+                      ))
+                    : Container(
+                        child: Text(
+                        "Ainda não tem informações.",
+                        style: TextStyle(fontSize: 13.0),
+                      )),
+                leading: Icon(
+                    CategoryModel.getIconById(name: document['category']),
+                    size: 35,
+                    color: Theme.of(context).primaryColor),
+                trailing: Icon(
+                  OrderModel.iconTrackingOrder(
+                      status: document["tranckingEvents"][0]["status"])[0],
+                  size: 30,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => OrderDetailScreen(
+                              orderData: document,
+                            )),
+                  );
+                },
               ),
-              subtitle: document["quantidade"] != 0
-                  ? Container(
-                      child: Text(
-                      document["tranckingEvents"][0]["local"],
-                      style: TextStyle(fontSize: 13.0),
-                    ))
-                  : Container(
-                      child: Text(
-                      "Ainda não tem informações.",
-                      style: TextStyle(fontSize: 13.0),
-                    )),
-              leading: Icon(
-                  CategoryModel.getIconById(name: document['category']),
-                  size: 35,
-                  color: Theme.of(context).primaryColor),
-              trailing: Icon(
-                OrderModel.iconTrackingOrder(
-                    status: document["tranckingEvents"][0]["status"])[0],
-                size: 30,
-                color: Theme.of(context).primaryColor,
-              ),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => OrderDetailScreen(
-                            orderData: document,
-                          )),
-                );
-              },
             ),
           ),
         ),
@@ -193,15 +196,28 @@ class DeliveredTab extends StatelessWidget {
                           ),
                         ),
                         snapshot.data.documents.length != 0
-                            ? ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: snapshot.data.documents.length,
-                                itemBuilder: (context, item) {
-                                  return _buildListTile(
-                                      context, snapshot.data.documents[item]);
-                                })
+                            ? AnimationLimiter(
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.vertical,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemCount: snapshot.data.documents.length,
+                                    itemBuilder: (context, item) {
+                                      return AnimationConfiguration
+                                          .staggeredList(
+                                        position: item,
+                                        duration:
+                                            const Duration(milliseconds: 400),
+                                        child: SlideAnimation(
+                                          verticalOffset: 50.0,
+                                          child: FadeInAnimation(
+                                            child: _buildListTile(context,
+                                                snapshot.data.documents[item]),
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                              )
                             : Padding(
                                 padding: const EdgeInsets.only(top: 100),
                                 child: Column(
