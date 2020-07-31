@@ -231,7 +231,7 @@ class _MyAppState extends State<MyApp> {
       showBanner();
       return SplashScreen.navigate(
         name: 'assets/flare/splash-screen.flr',
-        next: (_) => LoginScreen(),
+        next: (_) => HomeScreen(),
         backgroundColor: Colors.white,
         fit: BoxFit.cover,
         until: () => Future.delayed(Duration(seconds: 0)),
